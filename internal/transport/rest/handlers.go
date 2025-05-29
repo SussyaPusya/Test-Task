@@ -15,6 +15,7 @@ type Service interface {
 	AddPeople(ctx context.Context, person *dto.Person) (string, error)
 	DeletePerson(ctx context.Context, id string) error
 	GetPeople(ctx context.Context, filter *dto.PersonFilter, limit, offset int) ([]dto.Person, error)
+	UpdatePerson(ctx context.Context, person *dto.Person) error
 }
 
 type Handlers struct {
@@ -99,8 +100,32 @@ func (h *Handlers) GetPeople(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "internal error")
 	}
 
-
-	
-
 	return c.JSON(http.StatusOK, people)
+}
+
+func (h *Handlers) UpdatePerson(c echo.Context) error {
+	ctx := c.Request().Context()
+
+	var reqStruct dto.Person
+	id := c.QueryParam("id")
+
+	logger.GetLoggerFromCtx(ctx).Debug(ctx, "Trying to bind JSON to dto.Person")
+
+	if err := c.Bind(&reqStruct); err != nil {
+		logger.GetLoggerFromCtx(ctx).Debug(ctx, "Failed to bind JSON: "+err.Error())
+		return c.JSON(http.StatusBadRequest, "bad json")
+	}
+
+	logger.GetLoggerFromCtx(ctx).Info(ctx, "Received request to add person: Name="+reqStruct.Name+", Surname="+reqStruct.Surname)
+
+	logger.GetLoggerFromCtx(ctx).Debug(ctx, "Calling service.UpdatePerson")
+	reqStruct.ID = id
+
+	err := h.service.UpdatePerson(ctx, &reqStruct)
+	if err != nil {
+		logger.GetLoggerFromCtx(ctx).Debug(ctx, "Service failed to update person: "+err.Error())
+		return c.JSON(http.StatusInternalServerError, "InternalServerError")
+	}
+
+	return c.JSON(http.StatusOK, "succesful update")
 }

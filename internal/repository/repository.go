@@ -77,8 +77,6 @@ func (r *Repository) DeletePerson(ctx context.Context, id string) error {
 
 func (r *Repository) GetPeople(ctx context.Context, filter *dto.PersonFilter, limit, offset int) ([]dto.Person, error) {
 
-	fmt.Println(filter)
-
 	filetrMap := detectFilter(filter)
 
 	query := sq.Select("id", "name", "surname", "patronymic", "gender", "age", "nationality").
@@ -129,10 +127,39 @@ func (r *Repository) GetPeople(ctx context.Context, filter *dto.PersonFilter, li
 	return result, nil
 }
 
+func (r *Repository) UpdatePerson(ctx context.Context, person *dto.Person) error {
+	query := sq.Update("people").
+		Set("name", person.Name).
+		Set("surname", person.Surname).
+		Set("gender", person.Gender).
+		Set("age", person.Age).
+		Set("nationality", person.Nationality).
+		Where(sq.Eq{"id": person.ID}).
+		PlaceholderFormat(sq.Dollar)
+
+	sqlStr, args, err := query.ToSql()
+	if err != nil {
+		logger.GetLoggerFromCtx(ctx).Info(ctx, "Failed to build UPDATE SQL:", zap.Error(err))
+		return err
+	}
+
+	cmd, err := r.pg.Exec(ctx, sqlStr, args...)
+	if err != nil {
+		logger.GetLoggerFromCtx(ctx).Info(ctx, "UPDATE failed:", zap.Error(err))
+		return err
+	}
+
+	// проверка, что кто-то действительно обновился
+	if cmd.RowsAffected() == 0 {
+		return fmt.Errorf("no person found with id: %s", person.ID)
+	}
+
+	return nil
+}
+
 func detectFilter(filter *dto.PersonFilter) sq.Eq {
 	hash := sq.Eq{}
 	if filter.Name != "" {
-		fmt.Println("provberka", filter.Name)
 
 		hash["name"] = filter.Name
 	}

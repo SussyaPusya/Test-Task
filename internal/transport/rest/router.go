@@ -33,6 +33,7 @@ func NewRouter(cfg *config.Rest, handlers *Handlers, ctx context.Context, middle
 	e.GET("/people", handlers.GetPeople)
 	e.POST("/people", handlers.AddPeople)
 	e.POST("/people/delete", handlers.DeletePerson)
+	e.PATCH("/people/update", handlers.UpdatePerson)
 
 	return &Router{router: e, handlers: handlers, config: cfg}
 
