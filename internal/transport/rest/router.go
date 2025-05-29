@@ -30,6 +30,9 @@ func NewRouter(cfg *config.Rest, handlers *Handlers, ctx context.Context, middle
 	}
 	e.Use(middleware.Logger)
 	e.GET("/ping", handlers.Ping)
+	e.GET("/people", handlers.GetPeople)
+	e.POST("/people", handlers.AddPeople)
+	e.POST("/people/delete", handlers.DeletePerson)
 
 	return &Router{router: e, handlers: handlers, config: cfg}
 

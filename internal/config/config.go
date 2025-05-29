@@ -43,5 +43,14 @@ func NewConfig() (*Config, error) {
 		log.Println(err)
 	}
 
+	cfg.Postgres.Host = "localhost"
+	cfg.Postgres.Port = 5438
+	cfg.Postgres.Database = "postgres"
+	cfg.Postgres.User = "postgres"
+	cfg.Postgres.Password = "1234"
+	cfg.Postgres.MaxConn = 10
+	cfg.Postgres.MinConn = 5
+	cfg.Rest.Port = 8080
+
 	return &cfg, nil
 }
