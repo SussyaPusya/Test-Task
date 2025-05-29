@@ -11,6 +11,7 @@ import (
 	"test_task/pkg/logger"
 
 	"github.com/labstack/echo/v4"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"go.uber.org/zap"
 )
 
@@ -32,7 +33,8 @@ func NewRouter(cfg *config.Rest, handlers *Handlers, ctx context.Context, middle
 	e.GET("/ping", handlers.Ping)
 	e.GET("/people", handlers.GetPeople)
 	e.POST("/people", handlers.AddPeople)
-	e.POST("/people/delete", handlers.DeletePerson)
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
+	e.DELETE("/people/delete", handlers.DeletePerson)
 	e.PATCH("/people/update", handlers.UpdatePerson)
 
 	return &Router{router: e, handlers: handlers, config: cfg}

@@ -31,6 +31,17 @@ func (h *Handlers) Ping(c echo.Context) error {
 	return c.JSON(http.StatusOK, "PONG!")
 }
 
+// AddPeople godoc
+// @Summary Добавить нового человека
+// @Description Считывает с внешнего апи пол возраст и гендер
+// @Tags people
+// @Accept  json
+// @Produce  json
+// @Param   person  body dto.Person true "Person info"
+// @Success 200 {string} string "ID"
+// @Failure 400 {string} string "bad json"
+// @Failure 500 {string} string "internal error"
+// @Router /people [post]
 func (h *Handlers) AddPeople(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -56,6 +67,17 @@ func (h *Handlers) AddPeople(c echo.Context) error {
 	logger.GetLoggerFromCtx(ctx).Info(ctx, "Person successfully added to database")
 	return c.JSON(http.StatusOK, map[string]string{"status": "succesful", "ID": id})
 }
+
+// DeletePerson godoc
+// @Summary Удалить человека по ID
+// @Description Удаляет запись из базы данных по идентификатору
+// @Tags people
+// @Accept  json
+// @Produce  json
+// @Param   id   query string true "ID человека"
+// @Success 200 {string} string "succesful delete"
+// @Failure 500 {string} string "bla bla"
+// @Router /people/delete [delete]
 func (h *Handlers) DeletePerson(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -69,6 +91,23 @@ func (h *Handlers) DeletePerson(c echo.Context) error {
 	return c.JSON(http.StatusOK, "succesful delete")
 }
 
+// GetPeople godoc
+// @Summary Получить список людей
+// @Description Получает список людей с фильтрацией и пагинацией
+// @Tags people
+// @Accept  json
+// @Produce  json
+// @Param   name        query string false "Имя"
+// @Param   surname     query string false "Фамилия"
+// @Param   patronymic  query string false "Отчество"
+// @Param   gender      query string false "Пол"
+// @Param   age         query string false "Возраст"
+// @Param   country     query string false "Национальность"
+// @Param   page        query int false "Номер страницы (по умолчанию 1)"
+// @Param   limit       query int false "Размер страницы (по умолчанию 10)"
+// @Success 200 {array} dto.Person
+// @Failure 500 {string} string "internal error"
+// @Router /people [get]
 func (h *Handlers) GetPeople(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -103,6 +142,18 @@ func (h *Handlers) GetPeople(c echo.Context) error {
 	return c.JSON(http.StatusOK, people)
 }
 
+// UpdatePerson godoc
+// @Summary Обновить данные человека
+// @Description Обновляет существующую запись по ID
+// @Tags people
+// @Accept  json
+// @Produce  json
+// @Param   id      query string true "ID человека"
+// @Param   person  body dto.Person true "Обновлённые данные человека"
+// @Success 200 {string} string "succesful update"
+// @Failure 400 {string} string "bad json"
+// @Failure 500 {string} string "InternalServerError"
+// @Router /people/update [patch]
 func (h *Handlers) UpdatePerson(c echo.Context) error {
 	ctx := c.Request().Context()
 

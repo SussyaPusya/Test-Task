@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	_ "test_task/docs"
 	"test_task/internal/clients"
 	"test_task/internal/config"
 	"test_task/internal/repository"
@@ -11,6 +12,12 @@ import (
 	"test_task/pkg/logger"
 	"test_task/pkg/postgres"
 )
+
+// @title People Enrichment API
+// @version 1.0
+// @description API для добавления и фильтрации людей
+// @host localhost:8080
+// @BasePath /
 
 func main() {
 	ctx := context.Background()
