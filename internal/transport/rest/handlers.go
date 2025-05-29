@@ -71,7 +71,6 @@ func (h *Handlers) DeletePerson(c echo.Context) error {
 func (h *Handlers) GetPeople(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	// --- Пагинация ---
 	page, err := strconv.Atoi(c.QueryParam("page"))
 	if err != nil || page < 1 {
 		page = 1
@@ -83,7 +82,6 @@ func (h *Handlers) GetPeople(c echo.Context) error {
 	}
 	offset := (page - 1) * limit
 
-	// --- Фильтры ---
 	filter := dto.PersonFilter{
 		Name:     c.QueryParam("name"),
 		Surname:  c.QueryParam("surname"),
@@ -95,13 +93,14 @@ func (h *Handlers) GetPeople(c echo.Context) error {
 
 	logger.GetLoggerFromCtx(ctx).Debug(ctx, fmt.Sprintf("Fetching people with filter: %+v, limit=%d, offset=%d", filter, limit, offset))
 
-	// --- Вызов сервиса ---
 	people, err := h.service.GetPeople(ctx, &filter, limit, offset)
 	if err != nil {
 		logger.GetLoggerFromCtx(ctx).Debug(ctx, "Failed to fetch people: "+err.Error())
 		return c.JSON(http.StatusInternalServerError, "internal error")
 	}
-	fmt.Println(people)
+
+
+	
 
 	return c.JSON(http.StatusOK, people)
 }

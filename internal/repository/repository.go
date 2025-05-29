@@ -83,12 +83,16 @@ func (r *Repository) GetPeople(ctx context.Context, filter *dto.PersonFilter, li
 
 	query := sq.Select("id", "name", "surname", "patronymic", "gender", "age", "nationality").
 		From("people").
+		Limit(uint64(limit)).
+		Offset(uint64(offset)).
 		PlaceholderFormat(sq.Dollar)
 
 	if len(filetrMap) == 0 {
 		query = sq.Select("id", "name", "surname", "patronymic", "gender", "age", "nationality").
 			From("people").
 			Where(filetrMap).
+			Limit(uint64(limit)).
+			Offset(uint64(offset)).
 			PlaceholderFormat(sq.Dollar)
 
 	}
